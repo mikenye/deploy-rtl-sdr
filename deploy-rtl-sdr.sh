@@ -45,7 +45,13 @@ PKGS_TO_INSTALL=()
 PKGS_TO_REMOVE=()
 for PKG in "${TRANS_PACKAGES[@]}"; do
   if dpkg -s "$PKG" > /dev/null 2>&1; then
-    logger "package '$PKG' already exists"
+    if dpkg-query -W --showformat='${Status}\n' "$PKG" | grep "install ok installed" > /dev/null 2>&1; then
+      logger "package '$PKG' already exists"
+    else
+      logger "package '$PKG' will be temporarily installed"
+      PKGS_TO_INSTALL+=("$PKG")
+      PKGS_TO_REMOVE+=("$PKG")
+    fi
   else
     logger "package '$PKG' will be temporarily installed"
     PKGS_TO_INSTALL+=("$PKG")
@@ -54,7 +60,12 @@ for PKG in "${TRANS_PACKAGES[@]}"; do
 done
 for PKG in "${PERMA_PACKAGES[@]}"; do
   if dpkg -s "$PKG" > /dev/null 2>&1; then
-    logger "package '$PKG' already exists"
+    if dpkg-query -W --showformat='${Status}\n' "$PKG" | grep "install ok installed" > /dev/null 2>&1; then
+      logger "package '$PKG' already exists"
+    else
+      logger "package '$PKG' will be installed"
+      PKGS_TO_INSTALL+=("$PKG")
+    fi
   else
     logger "package '$PKG' will be installed"
     PKGS_TO_INSTALL+=("$PKG")
