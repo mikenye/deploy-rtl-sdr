@@ -1,0 +1,3 @@
+FROM debian:stable-slim AS debian_tester
+COPY deploy-rtl-sdr.sh /src/deploy-rtl-sdr.sh
+RUN  bash -x /src/deploy-rtl-sdr.sh
